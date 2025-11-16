@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTE Exam Practice — Realistic Mock Tests (Free)</title>
+  <meta name="description" content="Realistic PTE-style mock tests: Reading, Writing, Listening, Speaking. Free for students. Includes timers, model answers and recorder." />
+  <meta name="keywords" content="PTE mock test, PTE practice, PTE speaking, PTE writing, free PTE" />
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="data:,">
+  <style>
+  :root{--bg1:#fff7fb;--bg2:#eef9ff;--accent:#7b61ff}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#102;}
+  body{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,var(--bg1),var(--bg2));}
+  .wrap{width:100%;max-width:1100px;background:rgba(255,255,255,0.96);border-radius:14px;padding:20px;box-shadow:0 12px 40px rgba(9,10,18,0.08)}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  h1{font-size:18px;margin:0}
+  .lead{color:#235;margin-top:6px}
+  .badge{background:linear-gradient(90deg,var(--accent),#42c2ff);color:white;padding:6px 10px;border-radius:999px;font-weight:700}
+
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(250,250,255,0.98));padding:14px;border-radius:10px;border:1px solid rgba(12,12,30,0.03)}
+  button{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+  button.alt{background:transparent;color:var(--accent);border:2px solid rgba(123,97,255,0.12)}
+  select,input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(12,12,30,0.06)}
+  .controls{display:flex;gap:8px;align-items:center}
+  .meta{font-size:13px;color:#446;margin-top:8px}
+  .section-title{display:flex;justify-content:space-between;align-items:center}
+  ol{margin:8px 0 0;padding-left:18px}
+  .small{font-size:13px;color:#556}
+  .question-box{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(12,12,30,0.03)}
+  .timer{font-weight:800;color:#b21}
+  .recording-ui{display:flex;gap:8px;align-items:center}
+
+  .blobs{position:fixed;inset:0;z-index:-1;pointer-events:none}
+  .blob{position:absolute;filter:blur(40px);opacity:0.75;border-radius:50%}
+  .blob.a{width:420px;height:420px;background:radial-gradient(circle at 20% 20%,#ffd1ea,transparent 40%);left:-160px;top:-120px}
+  .blob.b{width:360px;height:360px;background:radial-gradient(circle at 80% 80%,#cfe9ff,transparent 40%);right:-100px;bottom:-160px}
+  @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="blobs"><div class="blob a"></div><div class="blob b"></div></div>
+  <div class="wrap" role="main">
+    <header>
+      <div>
+        <h1>PTE Mock Test — Realistic Practice</h1>
+        <div class="lead">Free realistic PTE-style sections with timers, sample model answers and speaking recorder.</div>
+      </div>
+      <div style="text-align:right">
+        <div class="badge">Free for Students</div>
+        <div class="meta">MIT License</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main class="card" aria-live="polite">
+        <div class="section-title"><strong>Test Runner</strong><div class="small">Simulate exam flow</div></div>
+
+        <div style="margin-top:10px">
+          <label>Choose test type</label>
+          <select id="testType">
+            <option value="quick">Quick Mock (10-15 min)</option>
+            <option value="full">Full Mock (approx 60 min)</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button id="startTest">Start Test</button>
+          <button id="resetTest" class="alt">Reset</button>
+          <div class="small" style="margin-left:auto">Questions answered: <strong id="answeredCount">0</strong></div>
+        </div>
+
+        <div id="testArea" style="margin-top:12px"></div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="exportAll">Export Answers</button>
+          <button id="showModels" class="alt">Show Model Answers</button>
+        </div>
+
+        <div class="meta">Tips: Use the "Show Model Answers" only after finishing a section to self-evaluate. Speaking answers can be recorded and downloaded.</div>
+      </main>
+
+      <aside class="card">
+        <strong>Session</strong>
+        <div style="margin-top:10px">
+          <div class="small">Name: <input id="userName" placeholder="Your name (optional)"></div>
+          <div style="margin-top:10px"><strong>Section</strong><div id="currentSection" class="small">—</div></div>
+          <div style="margin-top:10px"><strong>Timer</strong><div id="sectionTimer" class="small">00:00</div></div>
+          <div style="margin-top:10px"><strong>Saved</strong><ol id="savedList"></ol></div>
+        </div>
+        <hr style="margin:12px 0">
+        <div class="small">This mock is for practice only. Questions are realistic examples and model answers are provided to help scoring and improvement.</div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+  // ---------- QUESTIONS: realistic PTE-like items with model answers ----------
+  const QUESTIONS = {
+    reading: [
+      {id:'R1', type:'fillblanks', prompt:"Fill in the blank: The rapid growth of technology has changed the way we ___ information.", modelAnswer:'access'},
+      {id:'R2', type:'reorder', prompt:"Reorder the sentences to make a coherent paragraph:", parts:[
+        "A. This has resulted in new jobs and industries.",
+        "B. Technology is constantly evolving and reshaping the economy.",
+        "C. Governments and businesses must adapt to change.",
+        "D. The change is both exciting and challenging for workers."], modelAnswer:'B,A,D,C'}
+    ],
+
+    writing: [
+      {id:'W1', type:'summary', prompt:'Summarize the text in one or two sentences: \"Renewable energy sources like wind and solar are becoming cheaper and more efficient, reducing dependence on fossil fuels.\"', modelAnswer:'Renewable energy such as wind and solar has become more affordable and efficient, reducing reliance on fossil fuels.'},
+      {id:'W2', type:'essay', prompt:'Write an essay (200-250 words): \"Discuss the advantages and disadvantages of online education.\"', modelAnswer:'Model essay available — covers accessibility, flexibility, cost-savings, but also notes lack of face-to-face interaction and digital divide.'}
+    ],
+
+    listening: [
+      {id:'L1', type:'mcq', prompt:'You will hear a short lecture (simulated). Which statement is true?\\n[Simulated audio transcript: \"The committee focused on budget cuts for the upcoming quarter, recommending spending freeze on non-essential projects.\"]', options:['They increased budget for new projects.','They recommended a spending freeze on non-essential projects.','They decided to hire more staff.'], modelAnswer:'They recommended a spending freeze on non-essential projects.'}
+    ],
+
+    speaking: [
+      {id:'S1', type:'repeat', prompt:'Repeat the sentence: \"Global collaboration improves innovation and problem solving.\"', modelAnswer:'(exact sentence) Global collaboration improves innovation and problem solving.'},
+      {id:'S2', type:'describe', prompt:'Describe the image: \"A busy market street with vendors selling fruits and textiles, people walking and bargaining.\" Talk for 40 seconds.', modelAnswer:'A sample description mentions market layout, colors, activities, and atmosphere.'}
+  };
+
+  // ---------- App State ----------
+  let saved = []; // {qid, section, answer, time, recordingBlob?}
+  let current = null;
+  let timerInterval = null;
+  let sectionSecondsLeft = 0;
+
+  const testArea = document.getElementById('testArea');
+  const startBtn = document.getElementById('startTest');
+  const resetBtn = document.getElementById('resetTest');
+  const testType = document.getElementById('testType');
+  const answeredCount = document.getElementById('answeredCount');
+  const savedList = document.getElementById('savedList');
+  const sectionTimer = document.getElementById('sectionTimer');
+  const currentSection = document.getElementById('currentSection');
+  const exportBtn = document.getElementById('exportAll');
+  const showModels = document.getElementById('showModels');
+  const userName = document.getElementById('userName');
+
+  let mediaRecorder = null; let recordedBlobs = []; let recordingUrl = null;
+
+  function startTestFlow(){
+    saved = []; updateSavedList(); answeredCount.textContent = 0;
+    const mode = testType.value === 'full' ? 'full' : 'quick';
+    const seq = mode==='full' ? ['reading','listening','writing','speaking'] : ['reading','writing','speaking'];
+    runSections(seq);
+  }
+
+  async function runSections(seq){
+    for(const sec of seq){
+      currentSection.textContent = sec.toUpperCase();
+      if(sec==='reading') sectionSecondsLeft = testType.value==='full' ? 900 : 180;
+      if(sec==='listening') sectionSecondsLeft = testType.value==='full' ? 600 : 120;
+      if(sec==='writing') sectionSecondsLeft = testType.value==='full' ? 1200 : 300;
+      if(sec==='speaking') sectionSecondsLeft = testType.value==='full' ? 600 : 180;
+
+      startTimer(sectionSecondsLeft);
+      await runSectionQuestions(sec);
+      stopTimer();
+    }
+    currentSection.textContent = 'Completed';
+    alert('Test simulation finished. Use Export Answers to download your responses and recordings.');
+  }
+
+  function startTimer(seconds){
+    let s = seconds;
+    sectionTimer.textContent = formatTime(s);
+    clearInterval(timerInterval);
+    timerInterval = setInterval(()=>{
+      s--; if(s<0){ clearInterval(timerInterval); sectionTimer.textContent='00:00'; return }
+      sectionTimer.textContent = formatTime(s);
+    },1000);
+  }
+  function stopTimer(){ clearInterval(timerInterval); }
+  function formatTime(s){ const m=Math.floor(s/60); const ss=s%60; return String(m).padStart(2,'0')+\":\"+String(ss).padStart(2,'0'); }
+
+  async function runSectionQuestions(section){
+    const list = QUESTIONS[section] || [];
+    for(const q of list){
+      await showQuestion(section,q);
+    }
+  }
+
+  function showQuestion(section,q){
+    return new Promise(resolve=>{
+      current = {section,q};
+      testArea.innerHTML = '';
+      const box = document.createElement('div'); box.className='question-box';
+      box.innerHTML = <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${section.toUpperCase()} - ${q.id}</strong></div><div class="small">Type: ${q.type}</div></div>;
+
+      const p = document.createElement('div'); p.style.marginTop='10px'; p.innerHTML = <div style="font-weight:600;margin-bottom:8px">Prompt</div><div>${q.prompt}</div>;
+      box.appendChild(p);
+
+      let inputEl = null;
+      if(q.type==='fillblanks' || q.type==='mcq' || q.type==='summary' || q.type==='essay'){
+        if(q.type==='mcq'){
+          const opts = q.options.map((o,i)=><div><label><input type="radio" name="opt" value="${o}"> ${o}</label></div>).join('');
+          const wrapper = document.createElement('div'); wrapper.style.marginTop='8px'; wrapper.innerHTML = opts; box.appendChild(wrapper); inputEl = wrapper;
+        } else if(q.type==='fillblanks'){
+          const input = document.createElement('input'); input.placeholder='Type the missing word here'; input.style.marginTop='8px'; box.appendChild(input); inputEl=input;
+        } else {
+          const ta = document.createElement('textarea'); ta.rows=6; ta.placeholder='Write your answer here...'; ta.style.marginTop='8px'; box.appendChild(ta); inputEl=ta;
+        }
+      }
+
+      if(q.type==='reorder'){
+        const listEl = document.createElement('div'); listEl.style.marginTop='8px';
+        q.parts.forEach((t,idx)=>{
+          const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.alignItems='center'; row.style.marginBottom='6px';
+          row.innerHTML = <div style="flex:1;">${t}</div>;
+          const up = document.createElement('button'); up.textContent='↑'; up.className='alt'; up.onclick=()=>{ if(idx>0){ q.parts.splice(idx-1,0,q.parts.splice(idx,1)[0]); showQuestion(section,q); } };
+          const down = document.createElement('button'); down.textContent='↓'; down.className='alt'; down.onclick=()=>{ if(idx<q.parts.length-1){ q.parts.splice(idx+1,0,q.parts.splice(idx,1)[0]); showQuestion(section,q); } };
+          row.appendChild(up); row.appendChild(down); listEl.appendChild(row);
+        });
+        box.appendChild(listEl);
+      }
+
+      if(q.type==='repeat' || q.type==='describe'){
+        const recWrap = document.createElement('div'); recWrap.style.marginTop='10px';
+        recWrap.innerHTML = <div class="recording-ui"><button id="recStart">Start Recording</button><button id="recStop" class="alt" disabled>Stop</button><div id="recStatus" class="small">Not recording</div></div>;
+        box.appendChild(recWrap);
+        setTimeout(()=>{
+          const start = box.querySelector('#recStart'); const stop = box.querySelector('#recStop'); const status = box.querySelector('#recStatus');
+          start.onclick = async ()=>{
+            recordedBlobs = [];
+            try{
+              const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+              mediaRecorder = new MediaRecorder(stream);
+              mediaRecorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) recordedBlobs.push(e.data); };
+              mediaRecorder.onstop = ()=>{
+                const blob = new Blob(recordedBlobs,{type:'audio/webm'});
+                recordingUrl = URL.createObjectURL(blob);
+                saved.push({qid:q.id, section:section, type:'audio', time:new Date().toISOString(), recordingBlob:blob});
+                updateSavedList();
+              };
+              mediaRecorder.start();
+              status.textContent='Recording...'; start.disabled=true; stop.disabled=false;
+            }catch(err){ alert('Microphone access denied or not available.'); }
+          };
+          stop.onclick = ()=>{ if(mediaRecorder && mediaRecorder.state==='recording'){ mediaRecorder.stop(); start.disabled=false; stop.disabled=true; status.textContent='Saved recording.'; answeredCount.textContent = saved.filter(s=>s.section).length; } };
+        },100);
+      }
+
+      const actions = document.createElement('div'); actions.style.marginTop='12px'; actions.style.display='flex'; actions.style.gap='8px';
+      const saveBtn = document.createElement('button'); saveBtn.textContent='Save Answer';
+      const nextBtn = document.createElement('button'); nextBtn.textContent='Save & Next'; nextBtn.className='alt';
+      actions.appendChild(saveBtn); actions.appendChild(nextBtn); box.appendChild(actions);
+
+      const modelWrap = document.createElement('div'); modelWrap.style.marginTop='8px'; modelWrap.className='small'; modelWrap.innerHTML = '<em>Model answer hidden. Click Show Model Answers to reveal.</em>';
+      box.appendChild(modelWrap);
+
+      testArea.appendChild(box);
+
+      function collectAnswer(){
+        let answer = '';
+        if(q.type==='mcq'){
+          const selected = box.querySelector('input[name="opt"]:checked'); if(selected) answer = selected.value;
+        } else if(q.type==='fillblanks' || q.type==='summary' || q.type==='essay'){
+          const val = box.querySelector('input,textarea'); if(val) answer = val.value.trim();
+        } else if(q.type==='reorder'){
+          answer = q.parts.join(' | ');
+        } else if(q.type==='repeat' || q.type==='describe'){
+          const ta = box.querySelector('textarea'); answer = ta ? ta.value.trim() : '';
+        }
+        return answer;
+      }
+
+      saveBtn.onclick = ()=>{
+        const ans = collectAnswer();
+        saved.push({qid:q.id, section:section, answer:ans, time:new Date().toISOString()}); updateSavedList(); answeredCount.textContent = saved.length;
+        alert('Answer saved.');
+      };
+      nextBtn.onclick = ()=>{ saveBtn.onclick(); resolve(); };
+
+      showModels.onclick = ()=>{
+        modelWrap.innerHTML = <div><strong>Model answer:</strong><div style="margin-top:6px">${q.modelAnswer || 'No model answer provided.'}</div></div>;
+      };
+    });
+  }
+
+  function updateSavedList(){
+    savedList.innerHTML = '';
+    saved.forEach((s,i)=>{
+      const li = document.createElement('li');
+      let text = `${s.qid} [${s.section}] - ${s.time} `;
+      if(s.type==='audio') text += ' (audio saved)'; else text += : ${s.answer? s.answer.slice(0,80)+'...' : '—'};
+      li.textContent = text; savedList.appendChild(li);
+    });
+  }
+
+  function resetAll(){ if(confirm('Reset session and clear saved answers?')){ saved=[]; updateSavedList(); answeredCount.textContent=0; testArea.innerHTML=''; currentSection.textContent='—'; sectionTimer.textContent='00:00'; } }
+
+  function exportAnswers(){
+    if(saved.length===0) return alert('No saved answers to export.');
+    const name = userName.value || 'student';
+    const lines = saved.map((s,i)=>{
+      return Item ${i+1} (id:${s.qid}, section:${s.section}, time:${s.time})\n${s.answer? s.answer : (s.type==='audio'?'[audio recording saved — download separately]':'')}\n\n;
+    }).join('\n');
+    const blob = new Blob([Name: ${name}\nGenerated: ${new Date().toISOString()}\n\n+lines],{type:'text/plain'});
+    const fname = pte_answers_${name.replace(/\s+/g,'_')}_${(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'_')}.txt;
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    alert('Answers exported. Note: audio recordings are saved in browser only; use recording download flow if needed.');
+  }
+
+  startBtn.addEventListener('click', startTestFlow);
+  resetBtn.addEventListener('click', resetAll);
+  exportBtn.addEventListener('click', exportAnswers);
+  showModels.addEventListener('click', ()=>{
+    if(confirm('Show model answers for current question?')){
+      const ev = new Event('click'); showModels.dispatchEvent(ev);
+    }
+  });
+  </script>
+</body>
+</html>
