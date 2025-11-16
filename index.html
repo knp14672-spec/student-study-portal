@@ -1,0 +1,175 @@
+<!--
+File: index.html
+Purpose: GitHub Pages-ready single-file PTE Practice Portal template
+License: MIT (free to use for students)
+Instructions:
+1. Create a new GitHub repository named yourname.github.io (or any repo and enable Pages).
+2. Copy this file as index.html to the repo root and push. Site will be live at https://yourname.github.io
+3. To customize: edit QUESTIONS array in the <script> section and change branding/labels.
+4. The export feature generates a downloadable .txt file named like: practice_answers_YYYYMMDD_HHMMSS.txt
+
+This single-file template includes:
+- SEO meta tags
+- Mobile-first responsive layout
+- Beautiful CSS animated background (no external images required)
+- Simple practice UI (questions, answer input, save/export answers)
+- Clear "Free for students" badge
+--><!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PTE Practice Portal — Free for Students</title>
+  <meta name="description" content="Free PTE practice portal — practice reading, writing, listening and speaking. No fees, free for students. Download answers as a file." />
+  <meta name="keywords" content="PTE practice, PTE mock test, free PTE, practice tests, PTE Gujarati, PTE Hindi" />
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="data:,"><style>
+  /* ----------  Beautiful animated background (no external images)  ---------- */
+  :root{--bg1:#ffd3e0;--bg2:#cfe9ff;--accent:#7b61ff}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#112;}
+  body{display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,var(--bg1),var(--bg2));overflow:auto}
+  .canvas{position:relative;z-index:2;max-width:980px;width:100%;background:rgba(255,255,255,0.85);border-radius:18px;box-shadow:0 10px 30px rgba(17,17,17,0.12);backdrop-filter:blur(6px);padding:28px}
+  h1{margin:0 0 6px;font-size:20px}
+  p.lead{margin:0 0 18px;color:#234}
+  .badge{display:inline-block;background:linear-gradient(90deg,var(--accent),#42c2ff);color:white;padding:6px 10px;border-radius:999px;font-weight:600;font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,245,255,0.8));padding:16px;border-radius:12px}
+  label{display:block;font-weight:600;margin-bottom:8px}
+  .question{margin-bottom:12px}
+  textarea,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(17,17,17,0.08);resize:vertical}
+  button{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+  button.secondary{background:transparent;color:var(--accent);border:2px solid rgba(123,97,255,0.14)}
+  .controls{display:flex;gap:8px;align-items:center}
+  .meta{font-size:13px;color:#445;margin-top:6px}
+  ul{padding-left:18px;margin:8px 0}
+  footer{margin-top:14px;font-size:13px;color:#334}/* Responsive */ @media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+/* Animated decorative blobs */ .blobs{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden} .blob{position:absolute;filter:blur(38px);opacity:0.75;mix-blend-mode:overlay;border-radius:50%;animation:float 12s ease-in-out infinite} .blob.a{width:420px;height:420px;background:radial-gradient(circle at 20% 20%,#ffd1ea,transparent 40%);left:-120px;top:-80px} .blob.b{width:360px;height:360px;background:radial-gradient(circle at 80% 80%,#cfe9ff,transparent 40%);right:-100px;bottom:-120px;animation-duration:14s} .blob.c{width:260px;height:260px;background:radial-gradient(circle at 50% 50%,#e7f8ff,transparent 40%);left:10%;bottom:10%;animation-duration:18s} @keyframes float{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-24px) rotate(12deg)}100%{transform:translateY(0) rotate(0deg)}} </style>
+
+</head>
+<body>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob a"></div>
+    <div class="blob b"></div>
+    <div class="blob c"></div>
+  </div>  <main class="canvas" role="main">
+    <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;">
+      <div>
+        <h1>PTE Practice Portal — Free for Students <span class="badge">No Payments</span></h1>
+        <p class="lead">Practice reading, writing and speaking questions. Use freely — no sign-up, no paywall. Export your answers as a file for later revision.</p>
+      </div>
+      <div style="text-align:right">
+        <div class="meta">Made for students · MIT License</div>
+      </div>
+    </div><div class="grid" style="margin-top:16px">
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong>Practice Area</strong>
+      <div class="controls">
+        <select id="areaSelect" aria-label="Practice area">
+          <option value="reading">Reading</option>
+          <option value="writing">Writing</option>
+          <option value="speaking">Speaking</option>
+        </select>
+        <button id="newQ">New Question</button>
+      </div>
+    </div>
+
+    <div id="questionWrap" aria-live="polite"></div>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="saveBtn">Save Answer</button>
+      <button id="exportBtn" class="secondary">Export Answers</button>
+    </div>
+
+    <div class="meta">Tip: Use the <strong>Export</strong> button to download your answers as a file named like <code>practice_answers_20251116_153045.txt</code>.</div>
+  </section>
+
+  <aside class="card">
+    <strong>Session</strong>
+    <div style="margin-top:8px">
+      <div><strong>Questions answered:</strong> <span id="count">0</span></div>
+      <div style="margin-top:8px"><strong>Saved answers</strong></div>
+      <ol id="answersList" style="margin:8px 0 0;padding-left:18px"></ol>
+    </div>
+
+    <hr style="margin:12px 0">
+    <div>
+      <strong>How to use (quick)</strong>
+      <ul>
+        <li>Select area → Click "New Question"</li>
+        <li>Type your answer → Save Answer</li>
+        <li>Export answers to download .txt file</li>
+      </ul>
+    </div>
+
+    <footer>
+      <strong>Free Notice</strong>
+      <p style="margin:6px 0 0;font-size:13px">This portal is free for students. Share with friends. Customize the questions in the code (QUESTIONS array).</p>
+    </footer>
+  </aside>
+</div>
+
+  </main>  <script>
+  // ---------- Configuration: change these QUESTIONS to customize practice content ----------
+  // File: index.html (this single-file app)
+  // Export filename will be practice_answers_YYYYMMDD_HHMMSS.txt
+
+  const QUESTIONS = {
+    reading: [
+      {id:'r1', q: 'Fill in the blanks: The quick brown ___ jumps over the lazy dog.', type:'text'},
+      {id:'r2', q: 'Multiple choice: Choose the correct sentence that is grammatically correct.', type:'text'}
+    ],
+    writing: [
+      {id:'w1', q: 'Summarize the following in one or two sentences: "Technology changes the way we learn."', type:'textarea'},
+      {id:'w2', q: 'Write a short essay (150-200 words) on "Importance of time management".', type:'textarea'}
+    ],
+    speaking: [
+      {id:'s1', q: 'Describe the image: (Imagine a beach with people enjoying sunset). Speak for 40 seconds.', type:'text'},
+      {id:'s2', q: 'Repeat the sentence: "Education opens doors to opportunity."', type:'text'}
+    ]
+  };
+
+  // ---------- App state ----------
+  let savedAnswers = [];
+  const questionWrap = document.getElementById('questionWrap');
+  const areaSelect = document.getElementById('areaSelect');
+  const newQ = document.getElementById('newQ');
+  const saveBtn = document.getElementById('saveBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const answersList = document.getElementById('answersList');
+  const countEl = document.getElementById('count');
+
+  function renderQuestion(area){
+    questionWrap.innerHTML = '';
+    const set = QUESTIONS[area] || [];
+    // show random question
+    const q = set[Math.floor(Math.random()*set.length)];
+    if(!q){ questionWrap.innerHTML = '<em>No questions found for this area.</em>'; return }
+
+    const div = document.createElement('div'); div.className='question';
+    div.innerHTML = `
+      <label for="ans">Question</label>
+      <div style="margin-bottom:8px;padding:12px;border-radius:8px;background:linear-gradient(180deg,rgba(250,250,255,0.9),rgba(245,245,255,0.95));border:1px solid rgba(17,17,17,0.04)">${q.q}</div>
+      ${q.type==='textarea'? '<textarea id="ans" rows="6" placeholder="Type your answer here..."></textarea>' : '<input id="ans" type="text" placeholder="Type your answer here...">'}`;
+// store current question id on wrapper
+div.dataset.qid = q.id;
+questionWrap.appendChild(div);
+
+}
+
+function saveAnswer(){ const ansEl = document.getElementById('ans'); if(!ansEl) return alert('No answer box found. Click New Question first.'); const text = ansEl.value.trim(); if(!text) return alert('Please type an answer before saving.'); const qid = questionWrap.querySelector('.question').dataset.qid || 'unknown'; const area = areaSelect.value; const record = {id: qid, area, answer: text, time: new Date().toISOString()}; savedAnswers.push(record); updateUI(); // clear box for next ansEl.value = ''; }
+
+function updateUI(){ answersList.innerHTML = ''; savedAnswers.forEach((r,i)=>{ const li = document.createElement('li'); li.textContent = [${r.area}] ${r.answer.slice(0,80)}${r.answer.length>80? '...':''}; answersList.appendChild(li); }); countEl.textContent = savedAnswers.length; }
+
+function exportAnswers(){ if(savedAnswers.length===0) return alert('No saved answers to export.'); // build file content const lines = savedAnswers.map((r,i)=>{ return Question ${i+1} (area:${r.area}, id:${r.id}, time:${r.time})\n${r.answer}\n\n---\n; }).join('\n'); const blob = new Blob([lines],{type:'text/plain;charset=utf-8'}); const now = new Date(); const pad = n=>String(n).padStart(2,'0'); const fname = practice_answers_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.txt; const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+
+// ---------- Event bindings ---------- newQ.addEventListener('click', ()=> renderQuestion(areaSelect.value)); areaSelect.addEventListener('change', ()=> renderQuestion(areaSelect.value)); saveBtn.addEventListener('click', saveAnswer); exportBtn.addEventListener('click', exportAnswers);
+
+// render initial renderQuestion(areaSelect.value);
+
+// Make sure this site is free console.log('This portal is free for students. License: MIT.'); </script>
+
+</body>
+</html>
